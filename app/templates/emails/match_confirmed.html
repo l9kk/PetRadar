@@ -1,0 +1,22 @@
+{% extends "emails/base.html" %}
+{% block content %}
+<h2>Здравствуйте, {{ user_name }}!</h2>
+<p>Отличные новости! Владелец подтвердил, что найденный вами питомец - это действительно их пропавший питомец.</p>
+
+<div class="pet-info">
+    <h3>Информация о питомце:</h3>
+    <p><strong>Имя:</strong> {{ pet_details.name }}</p>
+    <p><strong>Вид:</strong> {{ pet_details.species }}</p>
+    {% if pet_details.breed %}
+    <p><strong>Порода:</strong> {{ pet_details.breed }}</p>
+    {% endif %}
+    <p><strong>Потерян:</strong> {{ pet_details.lost_date }}</p>
+</div>
+
+<p>Контактная информация владельца доступна в приложении. Пожалуйста, свяжитесь с ними, чтобы договориться о возвращении питомца.</p>
+
+<p>Благодарим вас за использование {{ app_name }} и за помощь в воссоединении питомца с его семьей!</p>
+
+<p>С уважением,<br>
+Команда {{ app_name }}</p>
+{% endblock %}
