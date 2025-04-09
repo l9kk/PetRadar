@@ -1,6 +1,5 @@
 import os
 import secrets
-import logging
 
 from pydantic_settings import BaseSettings
 from pydantic import PostgresDsn, validator, field_validator
@@ -54,9 +53,6 @@ class Settings(BaseSettings):
     CV_WEIGHT_ATTRIBUTE: float = 0.2
     CV_WEIGHT_LOCATION: float = 0.1
     CV_WEIGHT_TIME: float = 0.1
-
-    # Port configuration for deployment platforms like Render
-    PORT: int = int(os.environ.get("PORT", 8000))
 
     model_config = {
         "env_file": ".env",
