@@ -1,10 +1,16 @@
 #!/bin/bash
 set -e
 
-pip install poetry
+# Install Poetry 2.1.2 (or your preferred version)
+curl -sSL https://install.python-poetry.org | python3 - --version 2.1.2
 
+# Add Poetry to PATH
+export PATH="$HOME/.local/bin:$PATH"
+
+# Configure Poetry to not create a virtual environment
 poetry config virtualenvs.create false
 
-poetry install --no-dev
+# Install dependencies
+poetry install --without dev
 
 echo "Build completed successfully"
