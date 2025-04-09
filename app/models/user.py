@@ -11,7 +11,6 @@ class User(BaseModel):
     last_name = sa.Column(sa.String, nullable=False)
     phone = sa.Column(sa.String, nullable=True)
     is_verified = sa.Column(sa.Boolean, default=False, nullable=False)
-    language = sa.Column(sa.String, default="ru", nullable=False)
 
     # Relationships
     pets = relationship("Pet", back_populates="owner", cascade="all, delete-orphan")

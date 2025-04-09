@@ -14,8 +14,6 @@ services:
         sync: false 
       - key: SECRET_KEY
         generateValue: true
-      - key: DEFAULT_LANGUAGE
-        value: ru
       - key: STORAGE_PROVIDER
         value: local
       - key: UPLOAD_DIR
