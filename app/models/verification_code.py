@@ -10,7 +10,9 @@ class VerificationCode(BaseModel):
     code = sa.Column(sa.String, nullable=False)
     expires_at = sa.Column(sa.DateTime, nullable=False)
     is_used = sa.Column(sa.Boolean, default=False, nullable=False)
-    code_metadata = sa.Column(JSONB, default={}, nullable=False)  # Renamed from 'metadata' to 'code_metadata'
+    code_metadata = sa.Column(
+        JSONB, default={}, nullable=False
+    )  # Renamed from 'metadata' to 'code_metadata'
 
     @property
     def is_expired(self) -> bool:

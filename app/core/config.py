@@ -1,10 +1,9 @@
 import os
 import secrets
-from typing import Optional, Dict, Any, List, Union
+import logging
 
-from pydantic import validator, field_validator, model_validator
 from pydantic_settings import BaseSettings
-from pydantic import PostgresDsn
+from pydantic import PostgresDsn, validator, field_validator
 
 
 class Settings(BaseSettings):
@@ -21,23 +20,27 @@ class Settings(BaseSettings):
     VERIFICATION_CODE_EXPIRE_MINUTES: int = 15
 
     # Database
-    DATABASE_URL: Optional[PostgresDsn] = None
+    DATABASE_URL: PostgresDsn
 
     # File storage
     UPLOADS_DIR: str = "uploads"
-    MAX_UPLOAD_SIZE_MB: Optional[int] = 10
+    MAX_UPLOAD_SIZE_MB: int = 10
 
     # CORS
-    ALLOWED_ORIGINS: Optional[str] = None
+    ALLOWED_ORIGINS: str = ""
+
+    @field_validator("ALLOWED_ORIGINS")
+    def parse_allowed_origins(cls, v):
+        return v.split(",") if v else []
 
     # Email settings
-    SMTP_SERVER: Optional[str] = None
-    SMTP_PORT: Optional[int] = 587
-    SMTP_USERNAME: Optional[str] = None
-    SMTP_PASSWORD: Optional[str] = None
-    SMTP_USE_TLS: Optional[bool] = True
-    EMAILS_FROM_EMAIL: Optional[str] = None
-    EMAILS_FROM_NAME: Optional[str] = None
+    SMTP_SERVER: str
+    SMTP_PORT: int = 587
+    SMTP_USERNAME: str
+    SMTP_PASSWORD: str
+    SMTP_USE_TLS: bool = True
+    EMAILS_FROM_EMAIL: str
+    EMAILS_FROM_NAME: str
 
     # CV Service settings
     CV_MODEL_PATH: str = "./app/cv/models"
@@ -57,15 +60,13 @@ class Settings(BaseSettings):
 
     model_config = {
         "env_file": ".env",
-        "extra": "ignore",  # This allows extra fields in the .env file
+        "extra": "ignore",
+        "case_sensitive": False,
     }
 
     @property
-    def database_url_str(self) -> Optional[str]:
-        """Return DATABASE_URL as a string for SQLAlchemy compatibility"""
-        if self.DATABASE_URL:
-            return str(self.DATABASE_URL)
-        return None
+    def database_url_str(self) -> str:
+        return str(self.DATABASE_URL)
 
 
 settings = Settings()

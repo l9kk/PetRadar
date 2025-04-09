@@ -49,5 +49,12 @@ ENV/
 # Environment variables
 .env
 
+# Uploads
+uploads/*
+!uploads/.gitkeep
 
-yolov5s.pt
+# SQLite
+*.sqlite
+
+# macOS
+.DS_Store

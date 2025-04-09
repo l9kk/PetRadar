@@ -1,6 +1,7 @@
 from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
+import os
 
 from app.api.routes import api_router
 from app.core.config import settings
@@ -22,10 +23,14 @@ app.add_middleware(
 
 app.include_router(api_router)
 
+
 @app.get("/")
 async def root():
     return {"message": f"Welcome to {settings.APP_NAME} API"}
 
+
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run("app.main:app", host="0.0.0.0", port=8000, reload=True)
+
+    port = int(os.environ.get("PORT", 8000))
+    uvicorn.run("app.main:app", host="0.0.0.0", port=port, reload=True)
