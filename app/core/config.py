@@ -8,8 +8,8 @@ from pydantic import PostgresDsn, validator, field_validator
 class Settings(BaseSettings):
     # Base settings
     APP_NAME: str = "PetRadar"
-    API_V1_STR: str = "/api/v1"
     DEBUG: bool = False
+    PORT: int = 8000
 
     # Security
     SECRET_KEY: str = secrets.token_urlsafe(32)

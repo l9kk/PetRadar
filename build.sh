@@ -11,6 +11,6 @@ export PATH="$HOME/.local/bin:$PATH"
 poetry config virtualenvs.create false
 
 # Install dependencies
-poetry install --without dev
+poetry install --without dev 
 
 echo "Build completed successfully"
