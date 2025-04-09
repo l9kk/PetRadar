@@ -3,11 +3,11 @@ services:
   - type: web
     name: petradar-api
     env: python
-    buildCommand: pip install poetry && poetry install --no-dev
+    buildCommand: curl -sSL https://install.python-poetry.org | python3 - --version 2.1.2 && ~/.local/bin/poetry config virtualenvs.create false && ~/.local/bin/poetry install --no-dev
     startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
     envVars:
       - key: PYTHON_VERSION
-        value: 3.12
+        value: 3.11.11
       - key: APP_NAME
         value: PetRadar
       - key: DATABASE_URL
