@@ -1,4 +1,6 @@
 #!/bin/bash
+PORT=${PORT:-8000}
 
-# Hardcoded port for now
-uvicorn app.main:app --host 0.0.0.0 --port 8000uvicorn app.main:app --host 0.0.0.0 --port "$PORT"
+echo "Starting server on port: $PORT"
+
+uvicorn app.main:app --host 0.0.0.0 --port $PORT
