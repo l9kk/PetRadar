@@ -18,7 +18,7 @@ logger = logging.getLogger(__name__)
 
 logger.info(f"Starting {settings.APP_NAME} API")
 logger.info(
-    f"Database URL: {settings.DATABASE_URL.replace('://', '://***:***@') if settings.DATABASE_URL else 'Not set'}"
+    f"Database URL: {str(settings.DATABASE_URL).replace('://', '://***:***@') if settings.DATABASE_URL else 'Not set'}"
 )
 
 try:
