@@ -19,11 +19,10 @@ ENV PATH="/opt/venv/bin:$PATH"
 
 RUN pip install "poetry==$POETRY_VERSION"
 
-# Add a fallback approach if the first attempt fails
 RUN poetry config virtualenvs.create false \
     && (poetry install --only main --no-interaction --no-ansi || \
         (rm -f poetry.lock && poetry lock && poetry install --only main --no-interaction --no-ansi))
 
 COPY . /app/
 
-CMD alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port $PORT
+CMD alembic upgrade head && bash -c 'uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000}'
