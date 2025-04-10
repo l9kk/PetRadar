@@ -1,21 +1,27 @@
-FROM python:3.11.11-slim
+FROM python:3.9-slim
+
+ENV PYTHONFAULTHANDLER=1 \
+    PYTHONUNBUFFERED=1 \
+    PYTHONHASHSEED=random \
+    PIP_NO_CACHE_DIR=off \
+    PIP_DISABLE_PIP_VERSION_CHECK=on \
+    POETRY_VERSION=1.3.1
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
+COPY poetry.lock pyproject.toml /app/
 
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends gcc libpq-dev curl && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
+RUN python -m venv /opt/venv
+ENV PATH="/opt/venv/bin:$PATH"
 
-COPY pyproject.toml poetry.lock* ./
+RUN pip install "poetry==$POETRY_VERSION"
 
-RUN pip install --upgrade pip && \
-    pip install poetry==1.7.1 && \
-    poetry config virtualenvs.create false && \
-    poetry config experimental.system-git-client true && \
-    pip install multidict==6.0.4 && \
-    poetry install --without dev --no-interaction
+RUN poetry config virtualenvs.create false \
+    && poetry install --only main --no-interaction --no-ansi
 
-COPY . .
+COPY . /app/
 
 CMD alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port $PORT
