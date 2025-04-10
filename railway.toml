@@ -1,12 +1,10 @@
 [build]
-builder = "nixpacks"
-buildCommand = "pip install --upgrade pip && pip install -U poetry==1.7.1 && poetry config experimental.system-git-client true && poetry lock --no-update && poetry install --without dev"
+builder = "DOCKERFILE"
+dockerfilePath = "Dockerfile"
 
 [deploy]
-startCommand = "alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port $PORT"
 healthcheckPath = "/"
 healthcheckTimeout = 100
 
 [environments]
 production.PORT = "8080"
-production.PYTHON_VERSION = "3.11.11"
