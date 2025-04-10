@@ -2,7 +2,7 @@
 builder = "nixpacks"
 
 [deploy]
-startCommand = "bash startup.sh"
+startCommand = "python run.py"
 restartPolicyType = "ON_FAILURE"
 
 [environments]
