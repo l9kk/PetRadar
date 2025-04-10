@@ -1,4 +1,4 @@
-FROM python:3.9-slim
+FROM python:3.11-slim
 
 ENV PYTHONFAULTHANDLER=1 \
     PYTHONUNBUFFERED=1 \
@@ -19,8 +19,10 @@ ENV PATH="/opt/venv/bin:$PATH"
 
 RUN pip install "poetry==$POETRY_VERSION"
 
+# Add a fallback approach if the first attempt fails
 RUN poetry config virtualenvs.create false \
-    && poetry install --only main --no-interaction --no-ansi
+    && (poetry install --only main --no-interaction --no-ansi || \
+        (rm -f poetry.lock && poetry lock && poetry install --only main --no-interaction --no-ansi))
 
 COPY . /app/
 
