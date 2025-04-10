@@ -20,6 +20,7 @@ class NotificationService:
         self.user_repo = UserRepository(db)
         self.pet_repo = PetRepository(db)
         self.email_service = EmailService()
+        self.webhook_service = WebhookService(db)
 
     async def create_notification(
         self,
@@ -245,9 +246,17 @@ class NotificationService:
 
     async def trigger_webhook_notification(
         self, *, user_id: uuid.UUID, event_type: str, data: Dict[str, Any]
-    ):
-        """Trigger webhook notification for an event"""
-        webhook_service = WebhookService(self.db)
-        return await webhook_service.send_webhook_notification(
+    ) -> int:
+        """Send a webhook notification to the user's registered webhook endpoints.
+
+        Args:
+            user_id: The ID of the user to send notifications to
+            event_type: The type of event (match_found, pet_lost, etc.)
+            data: Data payload to include in the notification
+
+        Returns:
+            The number of successfully delivered webhook notifications
+        """
+        return await self.webhook_service.send_webhook_notification(
             user_id=user_id, event_type=event_type, data=data
         )
