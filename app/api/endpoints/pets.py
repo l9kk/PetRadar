@@ -35,12 +35,69 @@ router = APIRouter()
 
 @router.post("", response_model=Pet)
 async def create_pet(
-    pet_in: PetCreate,
+    name: str = Form(...),
+    species: str = Form(...),
+    breed: Optional[str] = Form(None),
+    color: Optional[str] = Form(None),
+    age: Optional[int] = Form(None),
+    gender: Optional[str] = Form(None),
+    description: Optional[str] = Form(None),
+    microchipped: bool = Form(False),
+    status: str = Form("normal"),
+    lost_date: Optional[date] = Form(None),
+    lost_location: Optional[str] = Form(None),
+    lost_description: Optional[str] = Form(None),
+    photo: Optional[UploadFile] = File(None),
+    is_main_photo: bool = Form(True),
+    photo_description: Optional[str] = Form(None),
+    background_tasks: BackgroundTasks = BackgroundTasks(),
     current_user: User = Depends(get_current_verified_user),
     db: Session = Depends(get_db),
 ) -> Any:
+    pet_in = PetCreate(
+        name=name,
+        species=species,
+        breed=breed,
+        color=color,
+        age=age,
+        gender=gender,
+        description=description,
+        microchipped=microchipped,
+        status=status,
+    )
+
+    if status == "lost" and not lost_date:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Для потерянного питомца требуется указать дату пропажи (lost_date)",
+        )
+
+    if status == "lost":
+        pet_in.lost_date = lost_date
+        pet_in.lost_location = lost_location
+        pet_in.lost_description = lost_description
+
+    if photo and not photo.content_type.startswith("image/"):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Файл должен быть изображением",
+        )
+
     pets_service = PetsService(db)
-    return await pets_service.create_pet(owner_id=current_user.id, pet_in=pet_in)
+    created_pet = await pets_service.create_pet(
+        owner_id=current_user.id,
+        pet_in=pet_in,
+        photo=photo,
+        is_main_photo=is_main_photo,
+        photo_description=photo_description,
+        background_tasks=background_tasks,
+    )
+
+    if status == "lost":
+        notification_service = NotificationService(db)
+        await notification_service.create_pet_lost_notification(pet=created_pet)
+
+    return created_pet
 
 
 @router.get("/lost", response_model=PetListResponse)

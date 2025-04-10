@@ -43,7 +43,10 @@ class PetBase(BaseSchema):
 
 
 class PetCreate(PetBase):
-    pass
+    status: str = "normal"  # Default status is "normal" (not lost)
+    lost_date: Optional[date] = None
+    lost_location: Optional[str] = None
+    lost_description: Optional[str] = None
 
 
 class PetUpdate(BaseSchema):

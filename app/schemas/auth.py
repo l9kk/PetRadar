@@ -28,7 +28,6 @@ class RefreshToken(BaseSchema):
 
 class EmailVerification(BaseSchema):
     verification_code: str
-    new_email: Optional[EmailStr] = None
 
 
 class PasswordReset(BaseSchema):

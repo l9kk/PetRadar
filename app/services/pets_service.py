@@ -21,12 +21,9 @@ from app.cv.pet_finder import SimplePetFinder
 from app.services.notification_service import NotificationService
 from app.services.cv_service import CVService
 
-# Set up logging
 logger = logging.getLogger(__name__)
 
-# Thread pool for background processing
 _thread_pool = ThreadPoolExecutor(max_workers=5)
-# Map to track running background tasks
 _background_tasks = {}
 
 
@@ -44,8 +41,32 @@ class PetsService:
         os.makedirs(os.path.join(settings.UPLOADS_DIR, "pets"), exist_ok=True)
         os.makedirs(os.path.join(settings.UPLOADS_DIR, "found_pets"), exist_ok=True)
 
-    async def create_pet(self, owner_id: uuid.UUID, pet_in: PetCreate):
-        return self.pet_repo.create(obj_in=pet_in, owner_id=owner_id)
+    async def create_pet(
+        self,
+        owner_id: uuid.UUID,
+        pet_in: PetCreate,
+        photo: Optional[UploadFile] = None,
+        is_main_photo: bool = True,
+        photo_description: Optional[str] = None,
+        background_tasks: Optional[BackgroundTasks] = None,
+    ):
+        pet_data = pet_in.dict()
+        pet_data["owner_id"] = owner_id
+
+        pet = self.pet_repo.create(obj_in=pet_data)
+
+        if photo:
+            await self.upload_pet_photo(
+                pet_id=pet.id,
+                file=photo,
+                is_main=is_main_photo,
+                description=photo_description,
+                background_tasks=background_tasks,
+            )
+
+            pet = self.pet_repo.get_with_details(pet_id=pet.id)
+
+        return pet
 
     async def update_pet(self, pet_id: uuid.UUID, pet_in: PetUpdate):
         pet = self.pet_repo.get(id=pet_id)
@@ -167,7 +188,6 @@ class PetsService:
             Dictionary with processing results
         """
         try:
-            # Use the CV service to analyze the image instead of direct pet_finder usage
             result = self.cv_service.analyze_image(file_path)
 
             if "error" in result or not result.get("detected_animals"):
