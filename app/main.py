@@ -61,18 +61,6 @@ async def root():
     return {"message": f"Welcome to {settings.APP_NAME} API", "status": "online"}
 
 
-@app.get("/health")
-async def health_check():
-    """Health check endpoint for Railway"""
-    logger.info("Health check endpoint accessed")
-    return {
-        "status": "healthy",
-        "timestamp": datetime.now().isoformat(),
-        "environment": os.environ.get("ENVIRONMENT", "development"),
-        "app_name": settings.APP_NAME,
-    }
-
-
 if __name__ == "__main__":
     import uvicorn
 

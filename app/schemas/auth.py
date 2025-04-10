@@ -27,6 +27,7 @@ class RefreshToken(BaseSchema):
 
 
 class EmailVerification(BaseSchema):
+    email: EmailStr
     verification_code: str
 
 

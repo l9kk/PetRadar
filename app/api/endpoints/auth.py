@@ -195,42 +195,59 @@ def reset_password(reset_data: PasswordReset, db: Session = Depends(get_db)) -> 
 
 @router.post("/request-verification-email", response_model=dict)
 async def request_verification_email(
-    current_user: UserModel = Depends(get_current_user), db: Session = Depends(get_db)
+    email_in: ForgotPassword, db: Session = Depends(get_db)
 ) -> Any:
-    if current_user.is_verified:
-        return {"message": "Ваш адрес электронной почты уже подтвержден"}
-
     user_repo = UserRepository(db)
+    user = user_repo.get_by_email(email=email_in.email)
+
+    if not user:
+        return {
+            "message": "Если указанный email зарегистрирован, на него будет отправлен код подтверждения"
+        }
+
+    if user.is_verified:
+        return {
+            "message": "Если указанный email зарегистрирован, на него будет отправлен код подтверждения"
+        }
 
     verification_code = "".join([str(secrets.randbelow(10)) for _ in range(6)])
 
     user_repo.store_verification_code(
-        user_id=current_user.id,
+        user_id=user.id,
         code=verification_code,
         expires_minutes=settings.VERIFICATION_CODE_EXPIRE_MINUTES,
     )
 
     notification_service = NotificationService(db)
     await notification_service.send_verification_email(
-        user_id=current_user.id, verification_code=verification_code
+        user_id=user.id, verification_code=verification_code
     )
 
-    return {"message": "На вашу электронную почту отправлен код подтверждения"}
+    return {
+        "message": "Если указанный email зарегистрирован, на него будет отправлен код подтверждения"
+    }
 
 
 @router.post("/verify-email", response_model=dict)
 def verify_email(
     verification_data: EmailVerification,
-    current_user: UserModel = Depends(get_current_user),
     db: Session = Depends(get_db),
 ) -> Any:
-    if current_user.is_verified:
-        return {"message": "Ваш адрес электронной почты уже подтвержден"}
-
     user_repo = UserRepository(db)
 
+    # Get user by email
+    user = user_repo.get_by_email(email=verification_data.email)
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Пользователь с указанным email не найден",
+        )
+
+    if user.is_verified:
+        return {"message": "Адрес электронной почты уже подтвержден"}
+
     is_valid = user_repo.verify_code(
-        user_id=current_user.id, code=verification_data.verification_code
+        user_id=user.id, code=verification_data.verification_code
     )
 
     if not is_valid:
@@ -240,17 +257,17 @@ def verify_email(
         )
 
     if user_repo.is_verification_code_expired(
-        user_id=current_user.id, code=verification_data.verification_code
+        user_id=user.id, code=verification_data.verification_code
     ):
         raise HTTPException(
             status_code=status.HTTP_410_GONE,
             detail="Срок действия кода истек",
         )
 
-    user_repo.mark_verified(user_id=current_user.id)
+    user_repo.mark_verified(user_id=user.id)
 
     user_repo.invalidate_verification_code(
-        user_id=current_user.id, code=verification_data.verification_code
+        user_id=user.id, code=verification_data.verification_code
     )
 
     return {"message": "Электронная почта успешно подтверждена"}
