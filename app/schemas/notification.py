@@ -1,20 +1,20 @@
 from typing import List, Optional, Dict, Any
-from pydantic import BaseModel
+from datetime import datetime
+from uuid import UUID
+
+from app.schemas.base import BaseSchema
 
 
-class NotificationBase(BaseModel):
+class NotificationBase(BaseSchema):
     type: str
     title: str
     message: str
     data: Optional[Dict[str, Any]] = None
     is_read: bool = False
 
-    class Config:
-        from_attributes = True
 
-
-class NotificationCreate(BaseModel):
-    user_id: str
+class NotificationCreate(BaseSchema):
+    user_id: UUID
     type: str
     title: str
     message: str
@@ -22,18 +22,15 @@ class NotificationCreate(BaseModel):
 
 
 class Notification(NotificationBase):
-    id: str
-    created_at: str
-
-    class Config:
-        from_attributes = True
+    id: UUID
+    created_at: datetime
 
 
-class NotificationUpdate(BaseModel):
+class NotificationUpdate(BaseSchema):
     is_read: bool
 
 
-class NotificationList(BaseModel):
+class NotificationList(BaseSchema):
     items: List[Notification]
     total: int
     page: int

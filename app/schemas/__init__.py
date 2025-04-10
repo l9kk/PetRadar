@@ -1,3 +1,4 @@
+from app.schemas.base import BaseSchema
 from app.schemas.user import *
 from app.schemas.auth import *
 from app.schemas.pet import *

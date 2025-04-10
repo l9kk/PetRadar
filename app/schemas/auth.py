@@ -1,48 +1,50 @@
 from typing import Optional
-from pydantic import BaseModel, EmailStr, Field
+from pydantic import EmailStr, Field
+
+from app.schemas.base import BaseSchema
 
 
-class Token(BaseModel):
+class Token(BaseSchema):
     access_token: str
     refresh_token: str
     token_type: str
     expires_in: int
 
 
-class TokenPayload(BaseModel):
+class TokenPayload(BaseSchema):
     sub: Optional[str] = None
     exp: Optional[int] = None
     type: Optional[str] = None
 
 
-class Login(BaseModel):
+class Login(BaseSchema):
     username: str
     password: str
 
 
-class RefreshToken(BaseModel):
+class RefreshToken(BaseSchema):
     refresh_token: str
 
 
-class EmailVerification(BaseModel):
+class EmailVerification(BaseSchema):
     verification_code: str
     new_email: Optional[EmailStr] = None
 
 
-class PasswordReset(BaseModel):
+class PasswordReset(BaseSchema):
     token: str
     new_password: str = Field(..., min_length=8)
 
 
-class ForgotPassword(BaseModel):
+class ForgotPassword(BaseSchema):
     email: EmailStr
 
 
-class ChangePassword(BaseModel):
+class ChangePassword(BaseSchema):
     current_password: str
     new_password: str = Field(..., min_length=8)
 
 
-class RequestEmailChange(BaseModel):
+class RequestEmailChange(BaseSchema):
     new_email: EmailStr
     password: str

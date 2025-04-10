@@ -1,9 +1,11 @@
 from typing import List, Optional
-from datetime import date
-from pydantic import BaseModel, Field
+from datetime import date, datetime
+from uuid import UUID
+
+from app.schemas.base import BaseSchema
 
 
-class PetPhotoBase(BaseModel):
+class PetPhotoBase(BaseSchema):
     is_main: bool = False
     description: Optional[str] = None
 
@@ -17,22 +19,19 @@ class PetPhotoUpdate(PetPhotoBase):
 
 
 class PetPhotoInDB(PetPhotoBase):
-    id: str
-    pet_id: str
+    id: UUID
+    pet_id: UUID
     url: str
     is_main: bool
     image_processing_status: str
-    created_at: str
-
-    class Config:
-        from_attributes = True
+    created_at: datetime
 
 
 class PetPhoto(PetPhotoInDB):
     detected_attributes: Optional[dict] = None
 
 
-class PetBase(BaseModel):
+class PetBase(BaseSchema):
     name: str
     species: str
     breed: Optional[str] = None
@@ -47,7 +46,7 @@ class PetCreate(PetBase):
     pass
 
 
-class PetUpdate(BaseModel):
+class PetUpdate(BaseSchema):
     name: Optional[str] = None
     species: Optional[str] = None
     breed: Optional[str] = None
@@ -58,34 +57,28 @@ class PetUpdate(BaseModel):
     microchipped: Optional[bool] = None
 
 
-class PetStatusUpdate(BaseModel):
-    status: str = Field(..., pattern="^(normal|lost|found)$")
-    lost_date: Optional[date] = None
-    lost_location: Optional[str] = None
-    lost_description: Optional[str] = None
-
-
-class PetOwner(BaseModel):
-    id: str
-    first_name: str
-    last_name: str
-    phone: Optional[str] = None
-
-    class Config:
-        from_attributes = True
-
-
-class PetInDBBase(PetBase):
-    id: str
-    owner_id: str
+class PetStatusUpdate(BaseSchema):
     status: str
     lost_date: Optional[date] = None
     lost_location: Optional[str] = None
     lost_description: Optional[str] = None
-    created_at: str
 
-    class Config:
-        from_attributes = True
+
+class PetOwner(BaseSchema):
+    id: UUID
+    first_name: str
+    last_name: str
+    phone: Optional[str] = None
+
+
+class PetInDBBase(PetBase):
+    id: UUID
+    owner_id: UUID
+    status: str
+    lost_date: Optional[date] = None
+    lost_location: Optional[str] = None
+    lost_description: Optional[str] = None
+    created_at: datetime
 
 
 class Pet(PetInDBBase):
@@ -93,8 +86,8 @@ class Pet(PetInDBBase):
     photos: Optional[List[PetPhoto]] = None
 
 
-class PetList(BaseModel):
-    id: str
+class PetList(BaseSchema):
+    id: UUID
     name: str
     species: str
     breed: Optional[str] = None
@@ -102,9 +95,10 @@ class PetList(BaseModel):
     status: str
     lost_date: Optional[date] = None
 
-    class Config:
-        from_attributes = True
 
-
-class PetListResponse(BaseModel):
+class PetListResponse(BaseSchema):
     items: List[PetList]
+    total: int
+    page: int
+    limit: int
+    pages: int

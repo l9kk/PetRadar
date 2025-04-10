@@ -1,26 +1,25 @@
 from typing import List, Optional, Dict
-from datetime import date
-from pydantic import BaseModel
+from datetime import date, datetime
+from uuid import UUID
+
+from app.schemas.base import BaseSchema
 
 
-class FinderInfo(BaseModel):
-    id: str
+class FinderInfo(BaseSchema):
+    id: UUID
     first_name: str
     last_name: str
 
-    class Config:
-        from_attributes = True
 
-
-class PotentialMatch(BaseModel):
-    pet_id: str
+class PotentialMatch(BaseSchema):
+    pet_id: UUID
     name: str
     similarity: float
     photo_url: Optional[str] = None
     lost_date: Optional[date] = None
 
 
-class FoundPetBase(BaseModel):
+class FoundPetBase(BaseSchema):
     species: str
     description: Optional[str] = None
     location: str
@@ -36,14 +35,11 @@ class FoundPetCreate(FoundPetBase):
 
 
 class FoundPetInDBBase(FoundPetBase):
-    id: str
-    finder_id: str
+    id: UUID
+    finder_id: UUID
     photo_url: str
     photo_path: str
-    created_at: str
-
-    class Config:
-        from_attributes = True
+    created_at: datetime
 
 
 class FoundPet(FoundPetInDBBase):
@@ -52,20 +48,17 @@ class FoundPet(FoundPetInDBBase):
     potential_matches: Optional[List[PotentialMatch]] = None
 
 
-class FoundPetList(BaseModel):
-    id: str
+class FoundPetList(BaseSchema):
+    id: UUID
     photo_url: str
     species: str
     location: str
     found_date: date
     finder: FinderInfo
-    created_at: str
-
-    class Config:
-        from_attributes = True
+    created_at: datetime
 
 
-class FoundPetListResponse(BaseModel):
+class FoundPetListResponse(BaseSchema):
     items: List[FoundPetList]
     total: int
     page: int

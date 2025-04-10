@@ -1,8 +1,12 @@
 from typing import Optional
-from pydantic import BaseModel, EmailStr, Field
+from pydantic import EmailStr, Field
+from uuid import UUID
+from datetime import datetime
+
+from app.schemas.base import BaseSchema
 
 
-class UserBase(BaseModel):
+class UserBase(BaseSchema):
     email: Optional[EmailStr] = None
     first_name: Optional[str] = None
     last_name: Optional[str] = None
@@ -21,13 +25,10 @@ class UserUpdate(UserBase):
 
 
 class UserInDBBase(UserBase):
-    id: str
+    id: UUID
     email: EmailStr
     is_verified: bool
-    created_at: str
-
-    class Config:
-        from_attributes = True
+    created_at: datetime
 
 
 class User(UserInDBBase):
