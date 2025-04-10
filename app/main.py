@@ -45,7 +45,12 @@ async def root():
 
 if __name__ == "__main__":
     import uvicorn
+    import os
 
-    port = int(os.environ.get("PORT", 8000))
-
-    uvicorn.run("app.main:app", host="0.0.0.0", port=port)
+    try:
+        port = int(os.environ.get("PORT", 8000))
+        uvicorn.run("app.main:app", host="0.0.0.0", port=port)
+    except ValueError as e:
+        print(f"Error parsing PORT value: {os.environ.get('PORT')}")
+        print(f"Using default port 8000 instead")
+        uvicorn.run("app.main:app", host="0.0.0.0", port=8000)
