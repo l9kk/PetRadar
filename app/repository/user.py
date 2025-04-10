@@ -31,7 +31,6 @@ class UserRepository(BaseRepository[User, UserCreate, UserUpdate]):
             last_name=obj_in.last_name,
             phone=obj_in.phone,
             is_verified=False,
-            language=obj_in.language or "ru",
         )
         self.db.add(db_obj)
         self.db.commit()

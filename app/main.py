@@ -2,6 +2,9 @@ from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 import os
+import json
+from datetime import datetime
+from uuid import UUID
 
 from app.api.routes import api_router
 from app.core.config import settings
@@ -9,8 +12,19 @@ from app.core.database import get_db, Base, engine
 
 Base.metadata.create_all(bind=engine)
 
+
+# Custom JSON encoder to handle UUID and datetime
+class CustomJSONEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, datetime):
+            return obj.isoformat()
+        if isinstance(obj, UUID):
+            return str(obj)
+        return super().default(obj)
+
+
 app = FastAPI(
-    title=settings.APP_NAME,
+    title=settings.APP_NAME, json_encoder=CustomJSONEncoder  # Use our custom encoder
 )
 
 app.add_middleware(

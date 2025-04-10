@@ -23,7 +23,8 @@ class EmailService:
             [self.smtp_server, self.smtp_port, self.username, self.password]
         )
 
-        templates_dir = Path(__file__).parents[2] / "templates"
+        # Fix template path to point to app/templates instead of just templates
+        templates_dir = Path(__file__).parents[2] / "app" / "templates"
         self.env = Environment(loader=FileSystemLoader(templates_dir), autoescape=True)
 
         if not self.enabled:

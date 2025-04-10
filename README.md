@@ -73,7 +73,6 @@ This documentation describes the REST API of the backend developed in Python usi
    - last_name: last name
    - phone: phone number
    - is_verified: verification status
-   - language: user language preference (default: "ru")
    - created_at: creation date
    - updated_at: update date
 
@@ -175,7 +174,6 @@ POST /auth/register
   "last_name": "Иванов",
   "phone": "+7XXXXXXXXXX",
   "is_verified": false,
-  "language": "ru",
   "created_at": "2025-04-01T09:54:24"
 }
 ```
@@ -886,7 +884,6 @@ GET /users/me
   "last_name": "Иванов",
   "phone": "+7XXXXXXXXXX",
   "is_verified": true,
-  "language": "ru",
   "created_at": "2025-03-15T14:30:00",
   "pets_count": 2,
   "lost_pets_count": 1,
@@ -1245,10 +1242,6 @@ CV_WEIGHT_VISUAL=0.6           # Visual similarity weight
 CV_WEIGHT_ATTRIBUTE=0.2        # Attribute match weight
 CV_WEIGHT_LOCATION=0.1         # Geographic proximity weight
 CV_WEIGHT_TIME=0.1             # Temporal proximity weight
-
-# Localization
-DEFAULT_LANGUAGE=ru
-LOCALIZATION_FILES_PATH=./app/localization
 
 # CORS
 ALLOWED_ORIGINS=http://localhost:3000,https://petfinder-app.com

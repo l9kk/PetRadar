@@ -7,7 +7,6 @@ class UserBase(BaseModel):
     first_name: Optional[str] = None
     last_name: Optional[str] = None
     phone: Optional[str] = None
-    language: Optional[str] = "ru"
 
 
 class UserCreate(UserBase):

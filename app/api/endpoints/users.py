@@ -31,7 +31,6 @@ def get_current_user_info(
         "last_name": current_user.last_name,
         "phone": current_user.phone,
         "is_verified": current_user.is_verified,
-        "language": current_user.language,
         "created_at": current_user.created_at,
         "pets_count": stats["pets_count"],
         "lost_pets_count": stats["lost_pets_count"],
